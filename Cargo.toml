@@ -8,8 +8,6 @@ license = "MIT"
 [dependencies]
 polars = { version = "0.46", features = ["lazy", "temporal"] }
 thiserror = "1.0"
-serde = { version = "1.0", features = ["derive"] }
-chrono = { version = "0.4", optional = true }
 
 [dependencies.polars-tools-derive]
 path = "polars-tools-derive"
