@@ -6,7 +6,7 @@ description = "Schema validation and column helpers for Polars dataframes"
 license = "MIT"
 
 [dependencies]
-polars = { version = "0.43", features = ["lazy", "temporal"] }
+polars = { version = "0.46", features = ["lazy", "temporal"] }
 thiserror = "1.0"
 serde = { version = "1.0", features = ["derive"] }
 chrono = { version = "0.4", optional = true }
