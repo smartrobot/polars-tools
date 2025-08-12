@@ -22,9 +22,10 @@ fn is_likely_enum_type(type_str: &str) -> bool {
         "Option < i8 >", "Option < i16 >", "Option < i32 >", "Option < i64 >",
         "Option < u8 >", "Option < u16 >", "Option < u32 >", "Option < u64 >",
         "Option < f32 >", "Option < f64 >", "Option < bool >", "Option < String >",
-        // Chrono types
+        // Chrono types (both with and without chrono:: prefix)
         "chrono :: NaiveDate", "chrono :: NaiveDateTime", "chrono :: NaiveTime",
         "chrono :: DateTime < chrono :: Utc >",
+        "NaiveDate", "NaiveDateTime", "NaiveTime", "DateTime < Utc >",
     ];
     
     // Check if it's a known primitive
@@ -148,7 +149,7 @@ pub fn polars_columns_derive(input: TokenStream) -> TokenStream {
                     _ => quote!(polars::prelude::DataType::String),
                 }
             }
-            // Chrono temporal types
+            // Chrono temporal types (with chrono:: prefix)
             "chrono :: NaiveDate" => quote!(polars::prelude::DataType::Date),
             "chrono :: NaiveDateTime" => quote!(polars::prelude::DataType::Datetime(
                 polars::prelude::TimeUnit::Microseconds,
@@ -157,7 +158,18 @@ pub fn polars_columns_derive(input: TokenStream) -> TokenStream {
             "chrono :: NaiveTime" => quote!(polars::prelude::DataType::Time),
             "chrono :: DateTime < chrono :: Utc >" => quote!(polars::prelude::DataType::Datetime(
                 polars::prelude::TimeUnit::Microseconds,
-                Some("UTC".into())
+                Some(polars::prelude::PlSmallStr::from_static("UTC"))
+            )),
+            // Chrono temporal types (imported without prefix)
+            "NaiveDate" => quote!(polars::prelude::DataType::Date),
+            "NaiveDateTime" => quote!(polars::prelude::DataType::Datetime(
+                polars::prelude::TimeUnit::Microseconds,
+                None
+            )),
+            "NaiveTime" => quote!(polars::prelude::DataType::Time),
+            "DateTime < Utc >" => quote!(polars::prelude::DataType::Datetime(
+                polars::prelude::TimeUnit::Microseconds,
+                Some(polars::prelude::PlSmallStr::from_static("UTC"))
             )),
             _ => quote!(polars::prelude::DataType::String), // Default fallback
         }
@@ -385,7 +397,7 @@ pub fn polars_schema_derive(input: TokenStream) -> TokenStream {
                         _ => quote!(polars::prelude::DataType::String),
                     }
                 }
-                // Chrono temporal types
+                // Chrono temporal types (with chrono:: prefix)
                 "chrono :: NaiveDate" => quote!(polars::prelude::DataType::Date),
                 "chrono :: NaiveDateTime" => quote!(polars::prelude::DataType::Datetime(
                     polars::prelude::TimeUnit::Microseconds,
@@ -395,9 +407,20 @@ pub fn polars_schema_derive(input: TokenStream) -> TokenStream {
                 "chrono :: DateTime < chrono :: Utc >" => {
                     quote!(polars::prelude::DataType::Datetime(
                         polars::prelude::TimeUnit::Microseconds,
-                        Some("UTC".into())
+                        Some(polars::prelude::PlSmallStr::from_static("UTC"))
                     ))
                 }
+                // Chrono temporal types (imported without prefix)
+                "NaiveDate" => quote!(polars::prelude::DataType::Date),
+                "NaiveDateTime" => quote!(polars::prelude::DataType::Datetime(
+                    polars::prelude::TimeUnit::Microseconds,
+                    None
+                )),
+                "NaiveTime" => quote!(polars::prelude::DataType::Time),
+                "DateTime < Utc >" => quote!(polars::prelude::DataType::Datetime(
+                    polars::prelude::TimeUnit::Microseconds,
+                    Some(polars::prelude::PlSmallStr::from_static("UTC"))
+                )),
                 _ => quote!(polars::prelude::DataType::String), // Default fallback
             }
         })
@@ -455,7 +478,7 @@ pub fn polars_schema_derive(input: TokenStream) -> TokenStream {
                             _ => quote!(polars::prelude::DataType::String),
                         }
                     }
-                    // Chrono temporal types
+                    // Chrono temporal types (with chrono:: prefix)
                     "chrono :: NaiveDate" => quote!(polars::prelude::DataType::Date),
                     "chrono :: NaiveDateTime" => quote!(polars::prelude::DataType::Datetime(
                         polars::prelude::TimeUnit::Microseconds,
@@ -465,9 +488,20 @@ pub fn polars_schema_derive(input: TokenStream) -> TokenStream {
                     "chrono :: DateTime < chrono :: Utc >" => {
                         quote!(polars::prelude::DataType::Datetime(
                             polars::prelude::TimeUnit::Microseconds,
-                            Some("UTC".into())
+                            Some(polars::prelude::PlSmallStr::from_static("UTC"))
                         ))
                     }
+                    // Chrono temporal types (imported without prefix)
+                    "NaiveDate" => quote!(polars::prelude::DataType::Date),
+                    "NaiveDateTime" => quote!(polars::prelude::DataType::Datetime(
+                        polars::prelude::TimeUnit::Microseconds,
+                        None
+                    )),
+                    "NaiveTime" => quote!(polars::prelude::DataType::Time),
+                    "DateTime < Utc >" => quote!(polars::prelude::DataType::Datetime(
+                        polars::prelude::TimeUnit::Microseconds,
+                        Some(polars::prelude::PlSmallStr::from_static("UTC"))
+                    )),
                     _ => quote!(polars::prelude::DataType::String), // Default fallback
                 };
 

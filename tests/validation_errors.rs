@@ -267,11 +267,16 @@ fn test_chrono_type_validation() {
         utc_datetime_col: DateTime<Utc>,
     }
 
-    let df = df![
-        "date_col" => [NaiveDate::from_ymd_opt(2023, 1, 1).unwrap()],
-        "datetime_col" => [NaiveDate::from_ymd_opt(2023, 1, 1).unwrap().and_hms_opt(12, 0, 0).unwrap()],
-        "utc_datetime_col" => [DateTime::from_timestamp(1672531200, 0).unwrap()], // 2023-01-01 00:00:00 UTC
-    ].unwrap();
+    // Create DataFrame with proper chrono types using empty series (for schema validation only)
+    let date_series = Series::new_empty("date_col".into(), &DataType::Date);
+    let datetime_series = Series::new_empty("datetime_col".into(), &DataType::Datetime(TimeUnit::Microseconds, None));
+    let utc_datetime_series = Series::new_empty("utc_datetime_col".into(), &DataType::Datetime(TimeUnit::Microseconds, Some(PlSmallStr::from_static("UTC"))));
+    
+    let df = DataFrame::new(vec![
+        Column::new("date_col".into(), date_series),
+        Column::new("datetime_col".into(), datetime_series), 
+        Column::new("utc_datetime_col".into(), utc_datetime_series),
+    ]).unwrap();
 
     assert!(ChronoTypes::validate(&df).is_ok());
 }
