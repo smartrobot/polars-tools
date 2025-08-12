@@ -259,23 +259,26 @@ pub fn polars_columns_derive(input: TokenStream) -> TokenStream {
             pub const expr: #expr_struct_name = #expr_struct_name;
         }
 
-        impl ::polars_tools::PolarsColumnsExt for #name {
-            fn columns() -> Vec<&'static str> {
-                vec![#(#field_name_strs),*]
-            }
-        }
-
-        impl ::polars_tools::PolarsColumns for #name {
-            fn column_names() -> Vec<&'static str> {
+        // Implement the trait methods directly without trait bounds to avoid import issues
+        impl #name {
+            /// Implementation of PolarsColumnsExt::columns() 
+            pub fn columns() -> Vec<&'static str> {
                 vec![#(#field_name_strs),*]
             }
 
-            fn column_name_at(index: usize) -> Option<&'static str> {
+            /// Implementation of PolarsColumns::column_names()
+            pub fn column_names() -> Vec<&'static str> {
+                vec![#(#field_name_strs),*]
+            }
+
+            /// Implementation of PolarsColumns::column_name_at()
+            pub fn column_name_at(index: usize) -> Option<&'static str> {
                 let names = [#(#field_name_strs),*];
                 names.get(index).copied()
             }
 
-            fn col_expr(field_name: &str) -> Option<polars::prelude::Expr> {
+            /// Implementation of PolarsColumns::col_expr()
+            pub fn col_expr(field_name: &str) -> Option<polars::prelude::Expr> {
                 match field_name {
                     #(#field_name_strs => Some(polars::prelude::col(#field_name_strs)),)*
                     _ => None,
@@ -611,23 +614,26 @@ pub fn polars_schema_derive(input: TokenStream) -> TokenStream {
             pub const expr: #expr_struct_name = #expr_struct_name;
         }
 
-        impl ::polars_tools::PolarsColumnsExt for #name {
-            fn columns() -> Vec<&'static str> {
-                vec![#(#field_name_strs),*]
-            }
-        }
-
-        impl ::polars_tools::PolarsColumns for #name {
-            fn column_names() -> Vec<&'static str> {
+        // Implement the trait methods directly without trait bounds to avoid import issues
+        impl #name {
+            /// Implementation of PolarsColumnsExt::columns() 
+            pub fn columns() -> Vec<&'static str> {
                 vec![#(#field_name_strs),*]
             }
 
-            fn column_name_at(index: usize) -> Option<&'static str> {
+            /// Implementation of PolarsColumns::column_names()
+            pub fn column_names() -> Vec<&'static str> {
+                vec![#(#field_name_strs),*]
+            }
+
+            /// Implementation of PolarsColumns::column_name_at()
+            pub fn column_name_at(index: usize) -> Option<&'static str> {
                 let names = [#(#field_name_strs),*];
                 names.get(index).copied()
             }
 
-            fn col_expr(field_name: &str) -> Option<polars::prelude::Expr> {
+            /// Implementation of PolarsColumns::col_expr()
+            pub fn col_expr(field_name: &str) -> Option<polars::prelude::Expr> {
                 match field_name {
                     #(#field_name_strs => Some(polars::prelude::col(#field_name_strs)),)*
                     _ => None,
