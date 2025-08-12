@@ -233,7 +233,7 @@ pub fn polars_columns_derive(input: TokenStream) -> TokenStream {
             pub fn df() -> std::result::Result<polars::prelude::DataFrame, polars::prelude::PolarsError> {
                 let columns = vec![
                     #(
-                        polars::prelude::Series::new_empty(#field_name_strs.into(), &#polars_types)
+                        polars::prelude::Column::new(#field_name_strs.into(), polars::prelude::Series::new_empty(#field_name_strs.into(), &#polars_types))
                     ),*
                 ];
                 polars::prelude::DataFrame::new(columns)
@@ -259,13 +259,13 @@ pub fn polars_columns_derive(input: TokenStream) -> TokenStream {
             pub const expr: #expr_struct_name = #expr_struct_name;
         }
 
-        impl crate::PolarsColumnsExt for #name {
+        impl ::polars_tools::PolarsColumnsExt for #name {
             fn columns() -> Vec<&'static str> {
                 vec![#(#field_name_strs),*]
             }
         }
 
-        impl crate::PolarsColumns for #name {
+        impl ::polars_tools::PolarsColumns for #name {
             fn column_names() -> Vec<&'static str> {
                 vec![#(#field_name_strs),*]
             }
@@ -470,12 +470,12 @@ pub fn polars_schema_derive(input: TokenStream) -> TokenStream {
 
                 quote! {
                     let col = df.column(#field_name)
-                        .map_err(|_| crate::ValidationError::MissingColumn {
+                        .map_err(|_| ::polars_tools::ValidationError::MissingColumn {
                             column_name: #field_name.to_string()
                         })?;
 
                     if col.dtype() != &#polars_type {
-                        return Err(crate::ValidationError::TypeMismatch {
+                        return Err(::polars_tools::ValidationError::TypeMismatch {
                             column_name: #field_name.to_string(),
                             actual_type: format!("{:?}", col.dtype()),
                             expected_type: format!("{:?}", #polars_type),
@@ -562,18 +562,18 @@ pub fn polars_schema_derive(input: TokenStream) -> TokenStream {
             pub fn df() -> std::result::Result<polars::prelude::DataFrame, polars::prelude::PolarsError> {
                 let columns = vec![
                     #(
-                        polars::prelude::Series::new_empty(#field_name_strs.into(), &#polars_types_for_df)
+                        polars::prelude::Column::new(#field_name_strs.into(), polars::prelude::Series::new_empty(#field_name_strs.into(), &#polars_types_for_df))
                     ),*
                 ];
                 polars::prelude::DataFrame::new(columns)
             }
 
-            pub fn validate(df: &polars::prelude::DataFrame) -> crate::Result<()> {
+            pub fn validate(df: &polars::prelude::DataFrame) -> ::polars_tools::Result<()> {
                 #(#field_validations)*
                 Ok(())
             }
 
-            pub fn validate_strict(df: &polars::prelude::DataFrame) -> crate::Result<()> {
+            pub fn validate_strict(df: &polars::prelude::DataFrame) -> ::polars_tools::Result<()> {
                 Self::validate(df)?;
 
                 let expected_columns: std::collections::HashSet<_> =
@@ -582,7 +582,7 @@ pub fn polars_schema_derive(input: TokenStream) -> TokenStream {
                     df.get_column_names().into_iter().map(|s| s.as_str()).collect();
 
                 if expected_columns != actual_columns {
-                    return Err(crate::ValidationError::ColumnCountMismatch {
+                    return Err(::polars_tools::ValidationError::ColumnCountMismatch {
                         expected: expected_columns.into_iter().map(|s| s.to_string()).collect(),
                         actual: actual_columns.into_iter().map(|s| s.to_string()).collect(),
                     });
@@ -611,13 +611,13 @@ pub fn polars_schema_derive(input: TokenStream) -> TokenStream {
             pub const expr: #expr_struct_name = #expr_struct_name;
         }
 
-        impl crate::PolarsColumnsExt for #name {
+        impl ::polars_tools::PolarsColumnsExt for #name {
             fn columns() -> Vec<&'static str> {
                 vec![#(#field_name_strs),*]
             }
         }
 
-        impl crate::PolarsColumns for #name {
+        impl ::polars_tools::PolarsColumns for #name {
             fn column_names() -> Vec<&'static str> {
                 vec![#(#field_name_strs),*]
             }

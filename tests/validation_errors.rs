@@ -136,7 +136,7 @@ fn test_smaller_integer_types_support() {
     let s1 = Series::new("i8_val".into(), i8_data);
     let s2 = Series::new("i16_val".into(), i16_data);
 
-    let df = DataFrame::new(vec![s1, s2]).unwrap();
+    let df = DataFrame::new(vec![s1.into(), s2.into()]).unwrap();
 
     assert!(SmallIntTypes::validate(&df).is_ok());
     assert!(SmallIntTypes::validate_strict(&df).is_ok());

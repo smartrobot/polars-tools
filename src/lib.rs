@@ -5,6 +5,10 @@
 pub use polars::prelude::*;
 pub use polars_tools_derive::*;
 
+// For internal tests to work with absolute paths
+#[doc(hidden)]
+pub extern crate self as polars_tools;
+
 /// Validation error types that can occur during schema validation
 #[derive(Debug, thiserror::Error)]
 pub enum ValidationError {
